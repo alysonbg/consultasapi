@@ -1,1 +1,2 @@
 # consultasapi
+[![Python application](https://github.com/alysonbg/consultasapi/actions/workflows/djang_project.yml/badge.svg)](https://github.com/alysonbg/consultasapi/actions/workflows/djang_project.yml)
