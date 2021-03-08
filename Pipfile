@@ -9,6 +9,7 @@ dj-database-url = "*"
 python-decouple = "*"
 django-extensions = "*"
 djangorestframework = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 flake8 = "*"
