@@ -7,4 +7,3 @@ admin.site.register(Medico)
 admin.site.register(Horario)
 admin.site.register(Agenda)
 admin.site.register(Consulta)
-
