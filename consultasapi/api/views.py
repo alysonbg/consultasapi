@@ -30,7 +30,6 @@ class ListMedicos(generics.ListAPIView):
 
 class ListAgendas(generics.ListAPIView):
     serializer_class = serializers.AgendaSerializer
-    # permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = models.Agenda.objects.all()
@@ -49,8 +48,7 @@ class ListAgendas(generics.ListAPIView):
         return queryset
 
 
-class ConsultasView(APIView):
-    serializer_class = serializers.ConsultaSerializer
+class ConsultasDetalheView(APIView):
     permission_classes = [IsAuthenticated]
 
     def delete(self, request, pk):
@@ -70,4 +68,3 @@ class ConsultasView(APIView):
             return Response({})
         except models.Consulta.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-

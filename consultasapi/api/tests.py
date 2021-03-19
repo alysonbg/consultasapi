@@ -55,7 +55,7 @@ class MedicoViewTest(APITestCase):
         self.assertEqual(response.data, serializer.data)
 
     def test_filter_medico(self):
-        url = reverse('medicos') + f'?search=House&especialidade=1'
+        url = reverse('medicos') + f'?search=House&especialidade={self.cardiologista.id}'
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -115,5 +115,3 @@ class ConsultaViewDetailTest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 400)
-
-
