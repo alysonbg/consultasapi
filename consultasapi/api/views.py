@@ -31,6 +31,7 @@ class ListMedicos(generics.ListAPIView):
 
 
 class ListAgendas(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = serializers.AgendaSerializer
 
     def get_queryset(self):
@@ -51,9 +52,14 @@ class ListAgendas(generics.ListAPIView):
 
 
 class ConsultasView(generics.ListCreateAPIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     serializer_class = serializers.ConsultaSerializer
-    queryset = Consulta.objects.all()
+
+    def get_queryset(self):
+        queryset = Consulta.objects.filter(
+            paciente=self.request.user
+        ).filter(agenda__dia__gte=datetime.date.today())
+        return queryset
 
 
 class ConsultasDetalheView(APIView):

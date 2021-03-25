@@ -64,6 +64,3 @@ class ConsultaSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Horário já foi marcado por outra pessoa')
 
         return data
-
-
-

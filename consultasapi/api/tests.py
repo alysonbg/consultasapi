@@ -132,8 +132,12 @@ class ConsultasViewTest(APITestCase):
         self.past_agenda = models.Agenda.objects.create(medico=self.house_cardiologista, dia=yesterday)
         self.agenda = models.Agenda.objects.create(medico=self.house_cardiologista, dia=date.today())
         self.agenda_house_ortopedista = models.Agenda.objects.create(medico=self.house_ortopedista, dia=date.today())
-        self.past_consulta = models.Consulta.objects.create(paciente=self.user, horario='14:00', agenda=self.past_agenda)
-        self.consulta_house_ortopedista = models.Consulta.objects.create(horario='15:00', agenda=self.agenda_house_ortopedista)
+        self.past_consulta = models.Consulta.objects.create(
+            paciente=self.user, horario='14:00', agenda=self.past_agenda
+        )
+        self.consulta_house_ortopedista = models.Consulta.objects.create(
+            horario='15:00', agenda=self.agenda_house_ortopedista
+        )
         self.consulta = models.Consulta.objects.create(paciente=self.user, horario='15:00', agenda=self.agenda)
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
 
