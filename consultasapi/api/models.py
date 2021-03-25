@@ -24,7 +24,6 @@ class Medico(models.Model):
 class Agenda(models.Model):
     medico = models.ForeignKey(Medico, on_delete=models.PROTECT)
     dia = models.DateField(validators=[validate_date])
-    horarios = models.ManyToManyField('Consulta')
 
     def __str__(self) -> str:
         return f'{self.medico.nome} {self.dia}'
@@ -38,6 +37,7 @@ class Consulta(models.Model):
     paciente = models.ForeignKey(get_user_model(), on_delete=models.PROTECT, null=True, blank=True)
     horario = models.TimeField()
     ocupado = models.BooleanField(default=False)
+    agenda = models.ForeignKey(Agenda, related_name='horarios', on_delete=models.PROTECT, null=True)
 
     def __str__(self) -> str:
         return f'{self.horario}'
