@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from consultasapi.api import models, serializers
@@ -114,4 +114,46 @@ class ConsultaViewDetailTest(APITestCase):
         url = reverse('consultas_detalhe', kwargs={'pk': past_consulta.id})
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
         response = self.client.delete(url)
+        self.assertEqual(response.status_code, 400)
+
+
+class ConsultasViewTest(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='admin', password='admin123')
+        self.token = Token.objects.create(user=self.user)
+        self.ortopedista = models.Especialidade.objects.create(nome='Ortopedista')
+        self.cardiologista = models.Especialidade.objects.create(nome='Cardiologista')
+        self.house_ortopedista = models.Medico.objects.create(nome='House', especialidade=self.ortopedista, crm='1234')
+        self.house_cardiologista = models.Medico.objects.create(
+            nome='House', especialidade=self.cardiologista, crm='2345'
+        )
+        yesterday = datetime.now() - timedelta(1)
+        self.past_agenda = models.Agenda.objects.create(medico=self.house_cardiologista, dia=yesterday)
+        self.agenda = models.Agenda.objects.create(medico=self.house_cardiologista, dia=date.today())
+        self.agenda_house_ortopedista = models.Agenda.objects.create(medico=self.house_ortopedista, dia=date.today())
+        self.past_consulta = models.Consulta.objects.create(paciente=self.user, horario='14:00', agenda=self.past_agenda)
+        self.consulta_house_ortopedista = models.Consulta.objects.create(horario='15:00', agenda=self.agenda_house_ortopedista)
+        self.consulta = models.Consulta.objects.create(paciente=self.user, horario='15:00', agenda=self.agenda)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+
+    def test_fail_to_create_a_consulta_using_a_past_date(self):
+        url = reverse('consultas')
+        data = {'agenda_id': self.past_agenda.id, 'horario': '14:00'}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_fail_to_create_a_consulta_with_duplicated_time(self):
+        url = reverse('consultas')
+        data = {'agenda_id': self.agenda_house_ortopedista.id, 'horario': '15:00'}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_fail_create_a_consulta_that_is_already_taken(self):
+        another_user = User.objects.create_user(username='anotheruser', password='another123')
+        another_token = Token.objects.create(user=another_user)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + another_token.key)
+        url = reverse('consultas')
+        data = {'agenda_id': self.agenda.id, 'horario': '15:00'}
+        response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 400)

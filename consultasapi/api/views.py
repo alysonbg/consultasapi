@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from consultasapi.api import models, serializers
 from rest_framework.permissions import IsAuthenticated
 
+from consultasapi.api.models import Consulta
+
 
 class ListEspecialidades(generics.ListAPIView):
     search_fields = ['nome']
@@ -46,6 +48,12 @@ class ListAgendas(generics.ListAPIView):
             queryset = queryset.filter(dia__range=(data_inicio, data_fim))
 
         return queryset
+
+
+class ConsultasView(generics.ListCreateAPIView):
+    # permission_classes = [IsAuthenticated]
+    serializer_class = serializers.ConsultaSerializer
+    queryset = Consulta.objects.all()
 
 
 class ConsultasDetalheView(APIView):
